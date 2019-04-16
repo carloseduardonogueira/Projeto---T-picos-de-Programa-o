@@ -8,6 +8,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var watsonTextToSpeechRouter = require('./routes/watsonTextToSpeech');
 var watsonSpeechToTextRouter = require('./routes/watsonSpeechToText');
+var cloudVisionRouter = require('./routes/cloudVision');
 
 var app = express();
 
@@ -25,6 +26,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/watsonTextToSpeech', watsonTextToSpeechRouter);
 app.use('/watsonSpeechToText', watsonSpeechToTextRouter);
+app.use('/cloudVision', cloudVisionRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
