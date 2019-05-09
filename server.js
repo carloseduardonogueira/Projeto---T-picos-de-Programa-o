@@ -66,33 +66,3 @@ app.post("/labels", upload.single('uploads'), function (req, res) {
         });
 });
 
-app.post("/faces", upload.single('uploads'), 
-    (req, res) => {
-        const currentFile = req.file.path;
-        client.faceDetection({ source: { filename: currentFile } })
-            .then((results) => {
-                const faces = results[0].faceAnnotations;
-                res.send(faces);
-            })
-            .catch((err) => {
-                console.error('ERROR:', err);
-                res.send("BAD");
-            });
-    }
-);
-
-app.post("/faces-optimized", upload.single('uploads'), function (req, res) {
-    const currentFile = req.file.path;
-    client.faceDetection({ source: { filename: currentFile } })
-        .then((results) => {
-            const faces = results[0].faceAnnotations;
-            fs.unlink(currentFile, (err) => {
-                if (err) throw err;
-            });
-            res.send(faces);
-        })
-        .catch((err) => {
-            console.error('ERROR:', err);
-            res.send("BAD");
-        });
-});
