@@ -15,23 +15,25 @@ var storage = multer.diskStorage({
   });
 var upload = multer({ storage: storage });
 
-router.post('/', function (req, res, next) {
+router.post('/upload', upload.single('public/images'), function (req, res) { 
+    var currentFile = req.file.path;
+    console.log("Image path: " + req.file.path);
+    res.send("Ok");
+});
+
+router.post('/textDetection', upload.single('public/images'), function (req, res) {
+    var currentFile = req.file.path; 
+    console.log(currentFile);
     client
-        .textDetection('../public/images/image.png')
+        .textDetection(currentFile)
         .then(results => {
-        const result = results[0].textAnnotations;
+        var result = results[0].textAnnotations;
  
         console.log(`Text Annotations Result: ${JSON.stringify(result, null, 2)}`);
     })
     .catch(err => {
         console.error('ERROR:', err);
     });
-});
-
-router.post('/upload', upload.single('uploads'), function (req, res) { 
-    var currentFile = req.file.path;
-    console.log("Image path: " + req.file.path);
-    res.send("Ok");
 });
 
 module.exports = router;

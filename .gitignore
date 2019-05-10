@@ -61,3 +61,5 @@ typings/
 .next
 
 APIKey.json
+
+public/images/

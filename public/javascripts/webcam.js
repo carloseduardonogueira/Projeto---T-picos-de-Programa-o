@@ -33,14 +33,15 @@ function upload() {
             }
         }
         const formData = new FormData();
-        formData.append("uploads", blob);
+        formData.append("public/images", blob);
         http.send(formData);
     });
+    sendTotextDetection();
 }
 
 function sendTotextDetection() {
     const http = new XMLHttpRequest();
-    const url = "text";
+    const url = "cloudVision/textDetection";
     snap().then((blob) => {
         http.open("POST", url, true);
         http.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
@@ -50,7 +51,7 @@ function sendTotextDetection() {
             }
         }
         const formData = new FormData();
-        formData.append("uploads", blob);
+        formData.append("public/images", blob);
         http.send(formData);
     });
 }
