@@ -22,7 +22,7 @@ function snap() {
 
 function upload() {
     const http = new XMLHttpRequest();
-    const url = "upload";
+    const url = "cloudVision/upload/";
     snap().then((blob) => {
         http.open("POST", url, true);
         http.setRequestHeader('X-Requested-With', 'XMLHttpRequest');

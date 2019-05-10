@@ -28,7 +28,7 @@ router.post('/', function (req, res, next) {
     });
 });
 
-router.post('/upload', upload.single('uploads'), function (req, res) {  
+router.post('/upload', upload.single('uploads'), function (req, res) { 
     var currentFile = req.file.path;
     console.log("Image path: " + req.file.path);
     res.send("Ok");
