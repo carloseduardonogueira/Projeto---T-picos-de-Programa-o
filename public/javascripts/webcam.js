@@ -1,7 +1,6 @@
 let video = document.getElementById("video");
 let img = document.getElementById("photo");
 let captured = document.getElementsByClassName("captured");
-let labels = document.getElementById("labels");
 
 
 navigator.mediaDevices.getUserMedia({ video: true })
@@ -14,45 +13,56 @@ navigator.mediaDevices.getUserMedia({ video: true })
 function snap() {
     return imageCapture.takePhoto()
         .then(blob => {
-            const imageUrl = URL.createObjectURL(blob);
+            var imageUrl = URL.createObjectURL(blob);
             img.src = imageUrl;
             return blob;
         });
 }
 
-function upload() {
-    const http = new XMLHttpRequest();
-    const url = "cloudVision/upload/";
-    snap().then((blob) => {
-        http.open("POST", url, true);
-        http.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-        http.onreadystatechange = (data) => {
-            //Call a function when the state changes.
-            if (http.readyState == 4 && http.status == 200) {
-                console.log(http.response);
-            }
-        }
-        const formData = new FormData();
-        formData.append("public/images", blob);
-        http.send(formData);
-    });
-    sendTotextDetection();
-}
-
 function sendTotextDetection() {
-    const http = new XMLHttpRequest();
-    const url = "cloudVision/textDetection";
+    var http = new XMLHttpRequest();
+    var url = "cloudVision";
     snap().then((blob) => {
         http.open("POST", url, true);
         http.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         http.onreadystatechange = () => {//Call a function when the state changes.
-            if (http.readyState == 4 && http.status == 200) {
-                text.innerHTML = prepareText(JSON.parse(http.responseText));
-            }
+            console.log(http.response);
         }
-        const formData = new FormData();
+        var formData = new FormData();
         formData.append("public/images", blob);
         http.send(formData);
+    });
+}
+
+function sendToTextToSpeech() {
+    $.ajax({
+        url: 'watsonTextToSpeech',
+        type: 'post',
+        data: {texto: 'Testando'},
+        // tratamento de erro do post
+        error: function (dados) {
+            console.log('Erro: ' + dados.responseText);
+            alert('Erro no processamento da API watsonTextToSpeech');
+        },
+        // tratamento de sucesso de processamento do post
+        success: function (dados) {
+            // se ocorreu algum erro no processamento da API
+            if (dados.status === 'ERRO')
+                alert('Erro: ' + dados.data); 
+            // caso os dados tenham retornado com sucesso
+            else {
+                // play no audio retornado
+                var audioElement = document.createElement('audio');
+                audioElement.setAttribute('src', 'audio/audioWatson.wav');
+                audioElement.load();
+                audioElement.play();
+                 // ao finalizar o audio, seta o atributo para vazio (evita cache)
+                 audioElement.addEventListener('ended', function () {
+                    audioElement.currentTime = 0;
+                    audioElement.setAttribute('src', '');
+                });   
+            } 
+        }
     });
 }
 

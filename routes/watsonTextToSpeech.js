@@ -5,25 +5,22 @@ var fs = require('fs');
 
 router.post('/', function (req, res, next) {
     var texto = req.body.texto;
-
     var synthesizeParams = {
         text: texto,
         accept: 'audio/wav',
         voice: 'pt-BR_IsabelaVoice'
     };
-
     textToSpeech.synthesize(
         synthesizeParams,
         function (err, audio) {
             if (err)
-                res.json({ status: 'ERRO', data: err });
+                res.json({ status: 'ERRO', data: err });    
             else {
-                textToSpeech.repairWavHeader(audio);
-                fs.writeFileSync('public/audio/' + 'audioWatson.wav', audio);
-                res.json({ status: 'OK', data: audio });
+                audio.pipe(fs.createWriteStream('public/audio/' + 'audioWatson.wav'));
+                res.send("OK");
             }
         }
-    );
+    ); 
 });
 
 module.exports = router;
