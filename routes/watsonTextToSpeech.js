@@ -10,6 +10,7 @@ router.post('/', function (req, res, next) {
         accept: 'audio/wav',
         voice: 'pt-BR_IsabelaVoice'
     };
+    console.log(synthesizeParams);
     textToSpeech.synthesize(
         synthesizeParams,
         function (err, audio) {
@@ -17,7 +18,7 @@ router.post('/', function (req, res, next) {
                 res.json({ status: 'ERRO', data: err });    
             else {
                 audio.pipe(fs.createWriteStream('public/audio/' + 'audioWatson.wav'));
-                res.send("OK");
+                res.send('OK');
             }
         }
     ); 

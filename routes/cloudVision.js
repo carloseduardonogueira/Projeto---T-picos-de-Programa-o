@@ -21,11 +21,10 @@ router.post('/', upload.single('public/images'), function (req, res) {
         .textDetection(currentFile)
         .then(results => {
         var result = results[0].textAnnotations;
-        console.log(result[0].description);
-        //console.log(`Text Annotations Result: ${JSON.stringify(result, null, 2)}`);
-        res.json({status: 'OK', data:result[0].description});
+        res.send(result[0].description);
     })
     .catch(err => {
+        res.send('Não foi possível identificar algum texto nesta imagem');
         console.error('ERROR:', err);
     });
 });

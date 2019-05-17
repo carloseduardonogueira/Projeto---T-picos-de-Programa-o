@@ -1,12 +1,12 @@
-let video = document.getElementById("video");
-let img = document.getElementById("photo");
-let captured = document.getElementsByClassName("captured");
+var video = document.getElementById("video");
+var img = document.getElementById("photo");
+var captured = document.getElementsByClassName("captured");
 
 
 navigator.mediaDevices.getUserMedia({ video: true })
 .then(stream => {
     video.srcObject = stream;
-    let mediaStreamTrack = stream.getVideoTracks()[0];
+    var mediaStreamTrack = stream.getVideoTracks()[0];
     imageCapture = new ImageCapture(mediaStreamTrack);
 });
 
@@ -27,6 +27,7 @@ function sendTotextDetection() {
         http.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         http.onreadystatechange = () => {//Call a function when the state changes.
             console.log(http.response);
+            sendToTextToSpeech(http.response);    
         }
         var formData = new FormData();
         formData.append("public/images", blob);
@@ -34,11 +35,11 @@ function sendTotextDetection() {
     });
 }
 
-function sendToTextToSpeech() {
+function sendToTextToSpeech(texto) {
     $.ajax({
         url: 'watsonTextToSpeech',
         type: 'post',
-        data: {texto: 'Testando'},
+        data: {texto: texto},
         // tratamento de erro do post
         error: function (dados) {
             console.log('Erro: ' + dados.responseText);
@@ -51,15 +52,23 @@ function sendToTextToSpeech() {
                 alert('Erro: ' + dados.data); 
             // caso os dados tenham retornado com sucesso
             else {
-                // play no audio retornado
-                var audioElement = document.createElement('audio');
-                audioElement.setAttribute('src', 'audio/audioWatson.wav');
-                audioElement.load();
-                audioElement.play();
-                 // ao finalizar o audio, seta o atributo para vazio (evita cache)
-                 audioElement.addEventListener('ended', function () {
-                    audioElement.currentTime = 0;
-                    audioElement.setAttribute('src', '');
+                // play no audio retornado 
+                var audio = new Audio('audio/audioWatson.wav');  
+                audio.type = 'audio/wav';
+
+                var playPromise = audio.play();
+
+                if (playPromise !== undefined) {
+                    playPromise.then(function () {
+                        console.log('Playing....');
+                    }).catch(function (error) {
+                        console.log('Failed to play....' + error);
+                    });
+                } 
+                // ao finalizar o audio, seta o atributo para vazio (evita cache)
+                audio.addEventListener('ended', function () {
+                    audio.currentTime = 0;
+                    audio.setAttribute('src', '');
                 });   
             } 
         }
