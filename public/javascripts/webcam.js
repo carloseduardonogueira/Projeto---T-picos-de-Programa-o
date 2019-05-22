@@ -75,3 +75,35 @@ function sendToTextToSpeech(texto) {
     });
 }
 
+// envia audio do usuário e converte para texto
+function speechToText(blob) {
+    // criar um formulário para enviar o arquivo de audio
+    var fd = new FormData();
+    fd.append('audioFile', blob);
+    // post para o serviço watsonSpeechToText
+    $.ajax({
+        url: 'watsonSpeechToText',
+        type: 'post',
+        data: fd,
+        processData: false,
+        contentType: false,
+        // tratamento de erro do post
+        error: function (dados) {
+            alert('Erro: ' + dados.responseText);
+        },
+        // tratamento de sucesso de processamento do post
+        success: function (dados) {
+            // se ocorreu algum erro no processamento da API
+            if (dados.status === 'ERRO')
+                alert('Erro: ' + dados.data);
+            // caso os dados tenham retornado com sucesso
+            else {
+                // recupera a conversão do audio em texto
+                console.log(JSON.stringify(dados.data.results[0].alternatives[0].transcript).replace(/"/g, ''))
+                //var retorno = JSON.stringify(dados.data.results[0].alternatives[0].transcript).replace(/"/g, '');
+                // envia o texto do audio para reconhecer uma palavra e mandar o comando
+                
+            }
+        }
+    });
+}
