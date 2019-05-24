@@ -17,8 +17,11 @@ router.post('/', function (req, res, next) {
             if (err)
                 res.json({ status: 'ERRO', data: err });    
             else {
-                audio.pipe(fs.createWriteStream('public/audio/' + 'audioWatson.wav'));
-                res.send('OK');
+                /*audio.pipe(fs.createWriteStream('public/audio/' + 'audioWatson.wav'));
+                res.send('OK');*/
+                textToSpeech.repairWavHeader(audio);
+                fs.writeFileSync('public/audio/' + 'audioWatson.wav', audio);
+                res.json({ status: 'OK', data: audio });
             }
         }
     ); 

@@ -13,10 +13,14 @@ var storage = multer.diskStorage({
       cb(null, Date.now() + '.jpg') //Appending .jpg
     }
   });
+
 var upload = multer({ storage: storage });
 
+
 router.post('/', upload.single('public/images'), function (req, res) {
+
     var currentFile = req.file.path; 
+    console.log(currentFile);
     client
         .textDetection(currentFile)
         .then(results => {

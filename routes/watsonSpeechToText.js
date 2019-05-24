@@ -6,7 +6,7 @@ var speechToText = require('../config/watsonSpeechToText');
 
 router.post('/', upload.single('audioFile'), function (req, res, next) {
     var audioStream = req.file;
-    console.log(JSON.stringify(audioStream));
+    //console.log(JSON.stringify(audioStream));
     
     var recognizeParams = {
         audio: audioStream.buffer,

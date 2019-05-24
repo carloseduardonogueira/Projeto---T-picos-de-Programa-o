@@ -1,16 +1,19 @@
 var video = document.getElementById("video");
-var img = document.getElementById("photo");
+var img;
 var captured = document.getElementsByClassName("captured");
 
-
-navigator.mediaDevices.getUserMedia({ video: true })
-.then(stream => {
-    video.srcObject = stream;
-    var mediaStreamTrack = stream.getVideoTracks()[0];
-    imageCapture = new ImageCapture(mediaStreamTrack);
-});
+function start(){
+    var video = document.getElementById("video");
+    navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => {
+       video.srcObject = stream;
+       var mediaStreamTrack = stream.getVideoTracks()[0];
+       imageCapture = new ImageCapture(mediaStreamTrack);
+    });
+}
 
 function snap() {
+    img = document.getElementById("photo");
     return imageCapture.takePhoto()
         .then(blob => {
             var imageUrl = URL.createObjectURL(blob);
@@ -19,24 +22,61 @@ function snap() {
         });
 }
 
-function sendTotextDetection() {
+function sendToTextDetection() {
     var http = new XMLHttpRequest();
     var url = "cloudVision";
+    var retorno = "valor inicial";
     snap().then((blob) => {
         http.open("POST", url, true);
         http.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         http.onreadystatechange = () => {//Call a function when the state changes.
-            console.log(http.response);
-            sendToTextToSpeech(http.response);    
+            retorno = http.responseText;
         }
         var formData = new FormData();
         formData.append("public/images", blob);
-        http.send(formData);
+        http.send(formData)
+      
+        //console.log(http.response);
+    })
+    .then(()=>{
+        console.log(retorno);
     });
+    
 }
 
-function sendToTextToSpeech(texto) {
-    $.ajax({
+/* function sendToTextDetection() {
+    snap().then((blob) => {
+        var formData = new FormData(blob);
+        // formData.set("public/images", blob);
+        console.log("bloocoococooc ", blob);
+        console.log("formmm mm mmm Dataa a a  a a a", formData)
+        $.ajax({
+            url: 'cloudVision',
+            type: 'post',
+            data: formData,
+            processData: false,
+            // tratamento de erro do post
+            error: function (dados) {
+                console.log( dados);
+                console.log('Erro: ' + dados.responseText);
+                alert('Erro no processamento da API cloudVision');
+            },
+            // tratamento de sucesso de processamento do post
+            success: function (dados) {
+                // se ocorreu algum erro no processamento da API
+                if (dados.status === 'ERRO')
+                    alert('Erro: ' + dados.data); 
+                // caso os dados tenham retornado com sucesso
+                else {
+                    
+                } 
+            }
+        });
+    });
+}
+ */
+function sendToTextToSpeech() {
+    /*$.ajax({
         url: 'watsonTextToSpeech',
         type: 'post',
         data: {texto: texto},
@@ -49,28 +89,48 @@ function sendToTextToSpeech(texto) {
         success: function (dados) {
             // se ocorreu algum erro no processamento da API
             if (dados.status === 'ERRO')
-                alert('Erro: ' + dados.data); 
+                alert('Erro: ' + dados.data);
             // caso os dados tenham retornado com sucesso
             else {
-                // play no audio retornado 
-                var audio = new Audio('audio/audioWatson.wav');  
-                audio.type = 'audio/wav';
-
-                var playPromise = audio.play();
-
-                if (playPromise !== undefined) {
-                    playPromise.then(function () {
-                        console.log('Playing....');
-                    }).catch(function (error) {
-                        console.log('Failed to play....' + error);
-                    });
-                } 
+                // play no audio retornado
+                var audioElement = document.createElement('audio');
+                audioElement.setAttribute('src', 'audio/audioWatson.wav');
+                audioElement.play();
                 // ao finalizar o audio, seta o atributo para vazio (evita cache)
-                audio.addEventListener('ended', function () {
-                    audio.currentTime = 0;
-                    audio.setAttribute('src', '');
-                });   
-            } 
+                audioElement.addEventListener('ended', function () {
+                    audioElement.currentTime = 0;
+                    audioElement.setAttribute('src', '');
+                });
+            }
+        }
+    });*/
+    // post para o serviço watsonTextToSpeech
+    $.ajax({
+        url: 'watsonTextToSpeech',
+        type: 'post',
+        data: { texto: JSON.stringify(dados.data.output.text) },
+        // tratamento de erro do post
+        error: function (dados) {
+            console.log('Erro: ' + dados.responseText);
+            alert('Erro no processamento da API watsonTextToSpeech');
+        },
+        // tratamento de sucesso de processamento do post
+        success: function (dados) {
+            // se ocorreu algum erro no processamento da API
+            if (dados.status === 'ERRO')
+                alert('Erro: ' + dados.data);
+            // caso os dados tenham retornado com sucesso
+            else {
+                // play no audio retornado
+                var audioElement = document.createElement('audio');
+                audioElement.setAttribute('src', 'audio/audioWatson.wav');
+                audioElement.play();
+                // ao finalizar o audio, seta o atributo para vazio (evita cache)
+                audioElement.addEventListener('ended', function () {
+                    audioElement.currentTime = 0;
+                    audioElement.setAttribute('src', '');
+                });
+            }
         }
     });
 }
@@ -99,9 +159,15 @@ function speechToText(blob) {
             // caso os dados tenham retornado com sucesso
             else {
                 // recupera a conversão do audio em texto
-                console.log(JSON.stringify(dados.data.results[0].alternatives[0].transcript).replace(/"/g, ''))
-                //var retorno = JSON.stringify(dados.data.results[0].alternatives[0].transcript).replace(/"/g, '');
+                var retorno = JSON.stringify(dados.data.results[0].alternatives[0].transcript).replace(/"/g, '');
                 // envia o texto do audio para reconhecer uma palavra e mandar o comando
+                if (retorno === "repetir"){
+                    console.log("ok");
+                }
+                else{
+                    console.log(retorno);
+                }
+
                 
             }
         }
