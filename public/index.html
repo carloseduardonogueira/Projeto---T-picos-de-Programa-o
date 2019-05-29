@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <title>Assistente de leitura para Deficientes Visuais</title>
+    <link rel="stylesheet" href="../stylesheets/styles.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+        integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous"> 
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
+        <script src="../javascripts/webcam.js"></script>
+        <script src="javascripts/audioControl.js"></script>
+    </head>
+
+<body>
+    <div class="live-camera">
+        <video id="video" width="100%" autoplay></video>
+    </div>
+    <div class="captured">
+        <img width="100%" id="photo" />
+    </div>
+    <nav>
+        <button class="shutter" onclick="sendToTextDetection()">
+            Capturar 
+        </button>
+        <i id="recordButton" class="fas fa-microphone-alt" style="font-size: 40px;" onclick="controlRecording(this);"></i>
+    </nav>
+</body>
+    <script>
+        start();
+    </script>
+</html>
