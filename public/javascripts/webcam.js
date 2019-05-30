@@ -1,6 +1,5 @@
 var video = document.getElementById("video");
 var img;
-var captured = document.getElementsByClassName("captured");
 
 function start(){
     var video = document.getElementById("video");
@@ -25,31 +24,23 @@ function snap() {
 function sendToTextDetection() {
     var http = new XMLHttpRequest();
     var url = "cloudVision";
-    var retorno = "valor inicial";
     snap().then((blob) => {
         http.open("POST", url, true);
         http.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         http.onreadystatechange = () => {//Call a function when the state changes.
-            retorno = http.responseText;
+            if(http.readyState === 4 && http.responseText !== "")
+                sendToTextToSpeech(http.response);
         }
         var formData = new FormData();
         formData.append("public/images", blob);
         http.send(formData)
-      
-        //console.log(http.response);
-    })
-    .then(()=>{
-        console.log(retorno);
-    });
-    
+    })    
 }
 
 /* function sendToTextDetection() {
     snap().then((blob) => {
         var formData = new FormData(blob);
-        // formData.set("public/images", blob);
-        console.log("bloocoococooc ", blob);
-        console.log("formmm mm mmm Dataa a a  a a a", formData)
+        formData.set("public/images", blob);
         $.ajax({
             url: 'cloudVision',
             type: 'post',
@@ -68,15 +59,15 @@ function sendToTextDetection() {
                     alert('Erro: ' + dados.data); 
                 // caso os dados tenham retornado com sucesso
                 else {
-                    
+                    sendToTextToSpeech(dados.data);
                 } 
             }
         });
     });
 }
  */
-function sendToTextToSpeech() {
-    /*$.ajax({
+function sendToTextToSpeech(texto) {
+    $.ajax({
         url: 'watsonTextToSpeech',
         type: 'post',
         data: {texto: texto},
@@ -93,47 +84,28 @@ function sendToTextToSpeech() {
             // caso os dados tenham retornado com sucesso
             else {
                 // play no audio retornado
-                var audioElement = document.createElement('audio');
-                audioElement.setAttribute('src', 'audio/audioWatson.wav');
-                audioElement.play();
+                var audio = document.createElement('audio');
+                audio.setAttribute('src', 'audio/audioWatson.wav');
+                audio.currentTime = 0;
+
+                var playPromise = audio.play();
+
+                if (playPromise !== undefined) {
+                    playPromise.then(function () {
+                        console.log('Play no audio....');                        
+                    }).catch(function (error) {
+                        console.log('Falhou....' + error);
+                    });                    
+                } 
                 // ao finalizar o audio, seta o atributo para vazio (evita cache)
-                audioElement.addEventListener('ended', function () {
-                    audioElement.currentTime = 0;
-                    audioElement.setAttribute('src', '');
-                });
-            }
-        }
-    });*/
-    // post para o serviço watsonTextToSpeech
-    $.ajax({
-        url: 'watsonTextToSpeech',
-        type: 'post',
-        data: { texto: JSON.stringify(dados.data.output.text) },
-        // tratamento de erro do post
-        error: function (dados) {
-            console.log('Erro: ' + dados.responseText);
-            alert('Erro no processamento da API watsonTextToSpeech');
-        },
-        // tratamento de sucesso de processamento do post
-        success: function (dados) {
-            // se ocorreu algum erro no processamento da API
-            if (dados.status === 'ERRO')
-                alert('Erro: ' + dados.data);
-            // caso os dados tenham retornado com sucesso
-            else {
-                // play no audio retornado
-                var audioElement = document.createElement('audio');
-                audioElement.setAttribute('src', 'audio/audioWatson.wav');
-                audioElement.play();
-                // ao finalizar o audio, seta o atributo para vazio (evita cache)
-                audioElement.addEventListener('ended', function () {
-                    audioElement.currentTime = 0;
-                    audioElement.setAttribute('src', '');
-                });
+                audio.addEventListener('ended', function () {
+                    audio.currentTime = 0;
+                    audio.setAttribute('src', '');
+                });    
             }
         }
     });
-}
+}    
 
 // envia audio do usuário e converte para texto
 function speechToText(blob) {
@@ -167,9 +139,9 @@ function speechToText(blob) {
                 else{
                     console.log(retorno);
                 }
-
-                
             }
         }
     });
 }
+
+

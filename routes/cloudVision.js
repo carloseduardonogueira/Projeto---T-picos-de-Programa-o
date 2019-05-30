@@ -28,7 +28,7 @@ router.post('/', upload.single('public/images'), function (req, res) {
         res.send(result[0].description);
     })
     .catch(err => {
-        res.send('Não foi possível identificar algum texto nesta imagem');
+        res.send('Nenhum texto encontrado nesta imagem');
         console.error('ERROR:', err);
     });
 });
