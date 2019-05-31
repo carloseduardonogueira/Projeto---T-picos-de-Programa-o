@@ -20,7 +20,7 @@ function playAudio(){
     audioElement.addEventListener('ended', function () {
         audioElement.currentTime = 0;
         audioElement.setAttribute('src', '');
-    });   
+    }); 
 }
 
 function snap() {
@@ -45,7 +45,7 @@ function sendToTextDetection() {
         }
         var formData = new FormData();
         formData.append("public/images", blob);
-        http.send(formData)
+        http.send(formData);
     })    
 }
 
@@ -67,7 +67,7 @@ function sendToTextToSpeech(texto) {
                 alert('Erro: ' + dados.data);
             // caso os dados tenham retornado com sucesso
             else {
-                playAudio(); 
+                playAudio();
             }
         }
     });
@@ -104,12 +104,12 @@ function speechToText(blob) {
                     sendToTextDetection(); 
                 }
                 else if(retorno.indexOf("repetir") > -1 ? true : false){
-                        console.log("Repetindo audio");
-                        playAudio(); 
-                    }
-                    else{
-                        console.log(retorno);
-                    }
+                    console.log("Repetindo audio");
+                    playAudio(); 
+                }
+                else{
+                     console.log(retorno);
+                }
             }
         }
     });
