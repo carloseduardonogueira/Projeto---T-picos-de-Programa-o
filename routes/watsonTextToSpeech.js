@@ -7,24 +7,22 @@ router.post('/', function (req, res, next) {
     var texto = req.body.texto;
     var synthesizeParams = {
         text: texto,
-        accept: 'audio/wav',
+        accept: 'audio/mp3',
         voice: 'pt-BR_IsabelaVoice'
     };
     console.log(synthesizeParams);
-    textToSpeech.synthesize(
-        synthesizeParams,
-        function (err, audio) {
-            if (err)
-                res.json({ status: 'ERRO', data: err });    
-            else {
-                /*audio.pipe(fs.createWriteStream('public/audio/' + 'audioWatson.wav'));
-                res.send('OK');*/
-                textToSpeech.repairWavHeader(audio);
-                fs.writeFileSync('public/audio/' + 'audioWatson.wav', audio);
-                res.json({ status: 'OK', data: audio });
-            }
-        }
-    ); 
+   textToSpeech.synthesize(synthesizeParams)
+    .then(audio => {
+        audio.pipe(fs.createWriteStream('public/audio/audioWatson.mp3'));
+        res.send('OK');
+        /*
+        audio.pipe(fs.createWriteStream('public/audio/'+'audioWatson.wav'));
+        res.send('OK');
+        */
+    })
+    .catch(err => {
+        console.log('error:', err);
+    }); 
 });
 
 module.exports = router;
