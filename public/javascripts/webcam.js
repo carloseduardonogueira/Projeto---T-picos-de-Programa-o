@@ -67,7 +67,7 @@ function sendToTextToSpeech(texto) {
                 alert('Erro: ' + dados.data);
             // caso os dados tenham retornado com sucesso
             else {
-                playAudio();
+                setTimeout(function(){playAudio();}, 5000);
             }
         }
     });
